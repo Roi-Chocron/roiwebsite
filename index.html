@@ -1,35 +1,483 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Eternal Bond</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Bond - Luxury Jewelry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'Montserrat', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+            --color-bg: #f8f9fa;
+            --color-text: #111;
+            --color-gray: #6b7280;
+            --color-gray-light: #9ca3af;
+            --color-gold: #c49a45;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        button { background: none; border: none; cursor: pointer; font-family: inherit; }
+        .font-serif { font-family: var(--font-serif); }
+        .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+        @media (min-width: 768px) { .container { padding: 0 48px; } }
+        @media (min-width: 1024px) { .container { padding: 0 64px; } }
+        .icon {
+            width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.5;
+            stroke-linecap: round; stroke-linejoin: round; fill: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        .icon-sm { width: 20px; height: 20px; }
+        .nav-icons .icon:hover { color: #000; transform: scale(1.1); }
+        .bg-marble {
+            position: absolute; inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1558235231-6869485125de?auto=format&fit=crop&q=80');
+            background-size: cover; background-position: center;
+            background-color: rgba(248, 249, 250, 0.93); background-blend-mode: lighten;
+            z-index: 0; pointer-events: none;
+        }
+        .text-outline {
+            color: transparent; -webkit-text-stroke: 1px rgba(180, 180, 180, 0.3);
+            user-select: none; position: absolute; z-index: 0;
+        }
+        .watermark-1 { top: 2rem; left: -5%; font-size: 8rem; letter-spacing: 0.1em; opacity: 0.7; }
+        .watermark-2 { top: 10%; left: 50%; transform: translateX(-50%); font-size: 10rem; letter-spacing: 0.1em; opacity: 0.6; }
+        .watermark-3 { bottom: 2.5rem; right: 2.5rem; font-size: 6rem; letter-spacing: 0.1em; opacity: 0.5; writing-mode: vertical-rl; transform: rotate(180deg); }
+        .watermark-mobile {
+            top: 15%; left: 50%; transform: translateX(-50%);
+            font-size: 5.5rem; letter-spacing: 0.1em; opacity: 0.8;
+            width: 100%; text-align: center; overflow: hidden; display: none;
+        }
+        @media (min-width: 1280px) {
+            .watermark-1 { font-size: 10rem; }
+            .watermark-2 { font-size: 14rem; }
+            .watermark-3 { font-size: 8rem; }
+        }
+        @media (max-width: 767px) {
+            .watermark-1, .watermark-2, .watermark-3 { display: none; }
+            .watermark-mobile { display: block; }
+        }
+        .reveal, .reveal-left, .reveal-right {
+            opacity: 0; transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal { transform: translateY(40px); }
+        .reveal-left { transform: translateX(-40px); }
+        .reveal-right { transform: translateX(40px); }
+        .reveal.active, .reveal-left.active, .reveal-right.active {
+            opacity: 1; transform: translate(0,0);
+        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-400 { transition-delay: 400ms; }
+        .delay-500 { transition-delay: 500ms; }
+        header {
+            position: relative; z-index: 50; padding-top: 1.5rem; padding-bottom: 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-links {
+            display: none; gap: 2rem; font-size: 12px; font-weight: 600;
+            letter-spacing: 0.2em; color: var(--color-gray);
+        }
+        .nav-links a { position: relative; transition: color 0.3s; }
+        .nav-links a:hover { color: #000; }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+            background-color: #000; transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .logo {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            font-size: 1.25rem; letter-spacing: 0.1em; font-weight: 500; color: #000;
+        }
+        .nav-icons { display: flex; gap: 1.25rem; align-items: center; color: #333; }
+        .menu-btn { display: block; color: #333; padding: 0.5rem; margin-left: -0.5rem; }
+        .user-icon-desktop { display: none; }
+        @media (min-width: 768px) {
+            header { padding-bottom: 3rem; }
+            .nav-links { display: flex; }
+            .menu-btn { display: none; }
+            .logo { font-size: 1.5rem; }
+            .user-icon-desktop { display: block; }
+        }
+        .mobile-menu {
+            position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px); z-index: 100; display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none; transition: all 0.5s ease-in-out;
+        }
+        .mobile-menu.open { opacity: 1; pointer-events: auto; }
+        .mobile-menu-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem; border-bottom: 1px solid #f3f4f6;
+        }
+        .close-btn { padding: 0.5rem; border-radius: 50%; transition: background-color 0.3s; }
+        .close-btn:hover { background-color: #f3f4f6; }
+        .mobile-nav-links {
+            flex-grow: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 2rem; font-size: 1.125rem; letter-spacing: 0.2em; color: #1f2937;
+        }
+        .mobile-nav-links a { transition: all 0.3s; }
+        .mobile-nav-links a:hover { color: #000; transform: scale(1.05); }
+        .hero-section { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+        .hero-layout { position: relative; z-index: 10; display: flex; flex-direction: column; flex-grow: 1; margin-top: 1rem; }
+        .hero-image-mobile { width: 100%; display: flex; justify-content: center; position: relative; margin: 1.5rem 0 2.5rem 0; z-index: 20; }
+        .hero-image-wrapper {
+            position: relative; width: 100%; max-width: 320px; aspect-ratio: 4/5;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden;
+        }
+        .hero-image-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+        .hero-image-wrapper:hover img { transform: scale(1.05); }
+        .hero-text-content {
+            width: 100%; display: flex; flex-direction: column; align-items: center;
+            text-align: center; z-index: 20; position: relative;
+        }
+        .hero-title { font-size: 3rem; line-height: 1.05; letter-spacing: -0.02em; color: #000; margin-bottom: 1.5rem; }
+        .hero-subtitle {
+            font-size: 13px; color: #374151; font-weight: 500; letter-spacing: 0.05em;
+            line-height: 1.6; margin-bottom: 2.5rem; max-width: 340px;
+        }
+        .hero-actions { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .glass-btn-wrapper { position: relative; display: inline-flex; align-items: center; margin-bottom: 2rem; cursor: pointer; }
+        .glass-btn {
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(245,245,245,0.7));
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.8);
+            color: #000; font-size: 11px; letter-spacing: 0.25em; font-weight: 600;
+            padding: 1rem 3rem 1rem 2rem; border-radius: 9999px; transition: all 0.3s ease;
+        }
+        .glass-btn-wrapper:hover .glass-btn { box-shadow: 0 8px 40px rgba(0,0,0,0.1); }
+        .gold-drop {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%) rotate(45deg);
+            width: 28px; height: 28px; border-radius: 0 50% 50% 50%;
+            background: linear-gradient(135deg, #fffcf5 0%, #e6cd98 40%, #c49a45 100%);
+            box-shadow: -2px -2px 6px rgba(255,255,255,0.8), 3px 3px 8px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.4); z-index: 10; transition: transform 0.3s ease;
+        }
+        .glass-btn-wrapper:hover .gold-drop { transform: translateY(-50%) rotate(45deg) scale(1.1); }
+        .explore-link {
+            display: flex; align-items: center; gap: 1rem; font-size: 10px; letter-spacing: 0.2em;
+            font-weight: 600; color: var(--color-gray); transition: color 0.3s ease; cursor: pointer;
+        }
+        .explore-link:hover { color: #000; }
+        .explore-line { width: 2rem; height: 1px; background-color: var(--color-gray-light); transition: width 0.3s ease; }
+        .explore-link:hover .explore-line { width: 3rem; }
+        .hashtag { margin-top: 4rem; font-size: 10px; letter-spacing: 0.2em; font-weight: 600; color: var(--color-gray); }
+        .hero-image-desktop { display: none; }
+        .heartbeat-svg { position: absolute; left: -4rem; top: 40%; z-index: 30; opacity: 0.7; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.07)); }
+        @media (min-width: 768px) {
+            .hero-layout { flex-direction: row; justify-content: space-between; align-items: center; margin-top: 2.5rem; }
+            .hero-image-mobile { display: none; }
+            .hero-text-content { width: 45%; align-items: flex-start; text-align: left; }
+            .hero-actions { align-items: flex-start; }
+            .hero-title { font-size: 3.75rem; }
+            .hero-subtitle { font-size: 14px; }
+            .hashtag { margin-top: 6rem; font-size: 12px; }
+            .glass-btn { font-size: 12px; }
+            .explore-link { font-size: 11px; }
+            .hero-image-desktop { display: flex; width: 50%; justify-content: flex-end; position: relative; z-index: 20; }
+            .hero-image-desktop .hero-image-wrapper { width: 85%; max-width: 550px; aspect-ratio: 4/3; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        }
+        @media (min-width: 1024px) {
+            .hero-text-content { width: 40%; }
+            .hero-title { font-size: 5rem; }
+            .hero-subtitle { font-size: 16px; }
+            .hero-image-desktop .hero-image-wrapper { aspect-ratio: 5/4; }
+        }
+        @media (min-width: 1280px) { .hero-title { font-size: 6rem; } }
+        .petal-container { position: absolute; z-index: 30; filter: drop-shadow(0 10px 8px rgba(0,0,0,0.04)); }
+        .petal { width: 100%; height: 100%; }
+        @keyframes pulse-float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+        .p-m-1 { top: -1.5rem; left: -1rem; width: 3rem; height: 3rem; transform: rotate(-20deg); animation: pulse-float 4s ease-in-out infinite; }
+        .p-m-2 { top: 50%; right: -1.5rem; width: 2.5rem; height: 2.5rem; transform: rotate(70deg); animation: pulse-float 5s ease-in-out infinite; }
+        .p-d-1 { top: -2rem; right: -2rem; width: 5rem; height: 5rem; transform: rotate(12deg); animation: pulse-float 4s ease-in-out infinite; }
+        .p-d-2 { top: 20%; left: -2rem; width: 3.5rem; height: 3.5rem; transform: rotate(-40deg); animation: pulse-float 5s ease-in-out infinite; }
+        .p-d-3 { bottom: 10%; right: 10%; width: 3rem; height: 3rem; transform: rotate(110deg); animation: pulse-float 6s ease-in-out infinite; }
+        .p-d-4 { display: none; bottom: 3rem; left: -3rem; width: 4rem; height: 4rem; transform: rotate(-15deg); animation: pulse-float 6s ease-in-out infinite; }
+        @media (min-width: 768px) { .p-d-4 { display: block; } }
+        .collection-section { padding: 6rem 0; background-color: #fff; position: relative; }
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-title { font-size: 2rem; color: #000; margin-bottom: 1rem; }
+        .section-divider { width: 4rem; height: 1px; background-color: #000; margin: 0 auto 1.5rem; }
+        .section-subtitle { color: var(--color-gray); letter-spacing: 0.1em; font-size: 0.75rem; text-transform: uppercase; }
+        .collection-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        @media (min-width: 768px) {
+            .section-title { font-size: 3rem; }
+            .collection-grid { grid-template-columns: repeat(3, 1fr); gap: 3rem; }
+        }
+        .collection-item { cursor: pointer; text-align: center; }
+        .collection-img-wrap { aspect-ratio: 1/1; overflow: hidden; background-color: #f4f4f4; margin-bottom: 1.5rem; }
+        .collection-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+        .collection-item:hover .collection-img-wrap img { transform: scale(1.1); }
+        .collection-item h3 { font-size: 1.25rem; margin-bottom: 0.5rem; transition: color 0.3s; }
+        .collection-item:hover h3 { color: var(--color-gold); }
+        .collection-item p.desc { font-size: 0.875rem; color: var(--color-gray); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
+        .collection-item p.action { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; }
+        .view-all-btn { margin-top: 4rem; text-align: center; }
+        .view-all-btn button {
+            border: 1px solid #000; padding: 1rem 2.5rem; font-size: 0.75rem;
+            font-weight: 600; letter-spacing: 0.2em; transition: all 0.3s ease;
+        }
+        .view-all-btn button:hover { background-color: #000; color: #fff; }
+        .craftsmanship-section { padding: 6rem 0; background-color: #faf9f8; }
+        .craft-layout { display: flex; flex-direction: column; align-items: center; gap: 4rem; }
+        .craft-image { width: 100%; }
+        .craft-image-inner {
+            position: relative; aspect-ratio: 3/4; overflow: hidden;
+            border-top-left-radius: 150px; border-top-right-radius: 150px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .craft-image-inner img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s ease; }
+        .craft-image-inner:hover img { transform: scale(1.05); }
+        .craft-text { width: 100%; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .craft-tag { font-size: 0.75rem; letter-spacing: 0.3em; color: var(--color-gold); font-weight: 600; margin-bottom: 1rem; }
+        .craft-title { font-size: 2.25rem; line-height: 1.2; margin-bottom: 2rem; }
+        .craft-desc { color: #4b5563; line-height: 1.6; margin-bottom: 2.5rem; max-width: 28rem; margin-inline: auto; }
+        .read-story { display: flex; align-items: center; justify-content: center; gap: 1rem; cursor: pointer; width: fit-content; margin: 0 auto; }
+        .read-story span { font-size: 0.75rem; letter-spacing: 0.2em; font-weight: 600; border-bottom: 1px solid #000; padding-bottom: 4px; }
+        .read-story .icon { width: 16px; height: 16px; transition: transform 0.3s ease; }
+        .read-story:hover .icon { transform: translateX(8px); }
+        @media (min-width: 768px) {
+            .craft-layout { flex-direction: row; gap: 4rem; }
+            .craft-image { width: 50%; }
+            .craft-image-inner { aspect-ratio: 1/1; }
+            .craft-text { width: 50%; text-align: left; }
+            .craft-title { font-size: 3rem; }
+            .craft-desc { margin-inline: 0; }
+            .read-story { justify-content: flex-start; margin: 0; }
+        }
+        @media (min-width: 1024px) {
+            .craft-image-inner { aspect-ratio: 3/4; }
+            .craft-layout { gap: 6rem; }
+            .craft-title { font-size: 3.75rem; }
+        }
+        footer { background-color: #111; color: #fff; padding: 5rem 0 2.5rem; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; margin-bottom: 4rem; }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: repeat(4, 1fr); } }
+        .footer-brand { font-size: 1.25rem; letter-spacing: 0.1em; font-weight: 500; margin-bottom: 1.5rem; }
+        .footer-brand-desc { color: var(--color-gray-light); font-size: 0.875rem; line-height: 1.6; max-width: 20rem; }
+        .footer-col h4 { font-size: 0.75rem; letter-spacing: 0.2em; font-weight: 600; margin-bottom: 1.5rem; color: #d1d5db; }
+        .footer-col ul { display: flex; flex-direction: column; gap: 1rem; }
+        .footer-col ul li a { color: var(--color-gray-light); font-size: 0.875rem; transition: color 0.3s ease; }
+        .footer-col ul li a:hover { color: #fff; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; display: flex;
+            flex-direction: column; gap: 1rem; color: var(--color-gray-light); font-size: 0.875rem;
+        }
+        .footer-legal { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .footer-legal a { transition: color 0.3s ease; }
+        .footer-legal a:hover { color: #fff; }
+        @media (min-width: 768px) {
+            .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+    </style>
 </head>
 <body>
-<div id="root"></div>
-
-<script type="text/babel">
-const { useState } = React;
-
-function App() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="p-10 text-center">
-      <h1 className="text-4xl font-bold mb-6">ETERNAL BOND</h1>
-      <p className="mb-6">Luxury Jewelry Experience</p>
-      <button onClick={()=>setOpen(!open)} className="px-6 py-3 bg-black text-white">
-        {open ? 'Close' : 'Open'} Menu
-      </button>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="font-serif logo" style="position: static; transform: none;">ETERNAL BOND</div>
+            <button class="close-btn" id="closeMenuBtn" aria-label="Close menu">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M18 6L6 18"></path><path d="M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="#collection">THE COLLECTION</a>
+            <a href="#story">OUR STORY</a>
+            <a href="#craftsmanship">CRAFTSMANSHIP</a>
+            <a href="#bespoke">BESPOKE</a>
+        </nav>
     </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-</script>
-
+    <section class="hero-section">
+        <div class="bg-marble"></div>
+        <div class="text-outline font-serif watermark-1">ETERNAL</div>
+        <div class="text-outline font-serif watermark-2">PROMISE</div>
+        <div class="text-outline font-serif watermark-3">PROMISE</div>
+        <div class="text-outline font-serif watermark-mobile">PROMISE</div>
+        <div class="container hero-layout">
+            <header class="reveal active">
+                <button class="menu-btn" id="openMenuBtn" aria-label="Open menu">
+                    <svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <nav class="nav-links">
+                    <a href="#collection">THE COLLECTION</a>
+                    <a href="#story">OUR STORY</a>
+                    <a href="#craftsmanship">CRAFTSMANSHIP</a>
+                    <a href="#bespoke">BESPOKE</a>
+                </nav>
+                <div class="logo font-serif">ETERNAL BOND</div>
+                <div class="nav-icons">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M6 2l1.5 4H20l-2 12H6L4 4H2"></path></svg>
+                    <svg class="icon icon-sm user-icon-desktop" viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+            </header>
+            <div class="hero-image-mobile reveal active delay-100">
+                <div class="hero-image-wrapper">
+                    <img src="https://i.ibb.co/GQz4W9S3/1773978534405.png" alt="Hands holding diamond ring">
+                    <div class="petal-container p-m-1">
+                        <svg class="petal" viewBox="0 0 100 100"><path fill="#fff" d="M50,0 C70,25 100,30 100,50 C100,70 70,75 50,100 C30,75 0,70 0,50 C0,30 30,25 50,0 Z"/></svg>
+                    </div>
+                    <div class="petal-container p-m-2">
+                        <svg class="petal" viewBox="0 0 100 100"><path fill="#fff" d="M50,0 C70,25 100,30 100,50 C100,70 70,75 50,100 C30,75 0,70 0,50 C0,30 30,25 50,0 Z"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-text-content">
+                <div class="petal-container p-d-4">
+                    <svg class="petal" viewBox="0 0 100 100"><path fill="#fff" d="M50,0 C70,25 100,30 100,50 C100,70 70,75 50,100 C30,75 0,70 0,50 C0,30 30,25 50,0 Z"/></svg>
+                </div>
+                <h1 class="hero-title font-serif reveal active delay-200">THE PROMISE<br>OF FOREVER</h1>
+                <p class="hero-subtitle reveal active delay-300">Explore curated bands of eternal love.<br>Exquisite craftsmanship, conflict-free stones.</p>
+                <div class="hero-actions reveal active delay-400">
+                    <div class="glass-btn-wrapper">
+                        <button class="glass-btn">DISCOVER YOUR RING</button>
+                        <div class="gold-drop"></div>
+                    </div>
+                    <div class="explore-link">
+                        <div class="explore-line"></div>
+                        <span>EXPLORE WEDDING BANDS</span>
+                    </div>
+                </div>
+                <div class="hashtag reveal active delay-500">#ETERNALBOND</div>
+            </div>
+            <div class="hero-image-desktop reveal-right active delay-300">
+                <svg class="heartbeat-svg" width="180" height="60" viewBox="0 0 180 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 30H50L60 10L75 50L85 30H100M105 30C105 32.76 102.76 35 100 35C97.24 35 95 32.76 95 30C95 27.24 97.24 25 100 25C102.76 25 105 27.24 105 30ZM110 30H180" stroke="#f0f0f0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="hero-image-wrapper">
+                    <img src="https://i.ibb.co/GQz4W9S3/1773978534405.png" alt="Hands holding diamond ring">
+                    <div class="petal-container p-d-1"><svg class="petal" viewBox="0 0 100 100"><path fill="#fff" d="M50,0 C70,25 100,30 100,50 C100,70 70,75 50,100 C30,75 0,70 0,50 C0,30 30,25 50,0 Z"/></svg></div>
+                    <div class="petal-container p-d-2"><svg class="petal" viewBox="0 0 100 100"><path fill="#fff" d="M50,0 C70,25 100,30 100,50 C100,70 70,75 50,100 C30,75 0,70 0,50 C0,30 30,25 50,0 Z"/></svg></div>
+                    <div class="petal-container p-d-3"><svg class="petal" viewBox="0 0 100 100"><path fill="#fff" d="M50,0 C70,25 100,30 100,50 C100,70 70,75 50,100 C30,75 0,70 0,50 C0,30 30,25 50,0 Z"/></svg></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="collection" class="collection-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2 class="section-title font-serif">THE COLLECTION</h2>
+                <div class="section-divider"></div>
+                <p class="section-subtitle">Curated Masterpieces</p>
+            </div>
+            <div class="collection-grid">
+                <div class="collection-item reveal delay-100">
+                    <div class="collection-img-wrap"><img src="https://images.unsplash.com/photo-1605100804763-247f67b454bf?auto=format&fit=crop&w=600&q=80" alt="Aura Solitaire"></div>
+                    <h3 class="font-serif">Aura Solitaire</h3>
+                    <p class="desc">18k White Gold</p>
+                    <p class="action">DISCOVER</p>
+                </div>
+                <div class="collection-item reveal delay-200">
+                    <div class="collection-img-wrap"><img src="https://images.unsplash.com/photo-1599643477874-566caea762bc?auto=format&fit=crop&w=600&q=80" alt="Eternity Band"></div>
+                    <h3 class="font-serif">Eternity Band</h3>
+                    <p class="desc">Platinum & Diamonds</p>
+                    <p class="action">DISCOVER</p>
+                </div>
+                <div class="collection-item reveal delay-300">
+                    <div class="collection-img-wrap"><img src="https://images.unsplash.com/photo-1515562141207-7a48cf7ce338?auto=format&fit=crop&w=600&q=80" alt="Vintage Halo"></div>
+                    <h3 class="font-serif">Vintage Halo</h3>
+                    <p class="desc">18k Rose Gold</p>
+                    <p class="action">DISCOVER</p>
+                </div>
+            </div>
+            <div class="view-all-btn reveal delay-400"><button>VIEW ALL COLLECTIONS</button></div>
+        </div>
+    </section>
+    <section id="craftsmanship" class="craftsmanship-section">
+        <div class="container craft-layout">
+            <div class="craft-image reveal-left">
+                <div class="craft-image-inner"><img src="https://images.unsplash.com/photo-1573408301145-b98c005f7787?auto=format&fit=crop&w=800&q=80" alt="Craftsmanship"></div>
+            </div>
+            <div class="craft-text reveal-right" id="story">
+                <h4 class="craft-tag">OUR STORY</h4>
+                <h2 class="craft-title font-serif">THE ART OF FINE<br>JEWELRY</h2>
+                <p class="craft-desc">For over a century, our master artisans have poured their passion into creating pieces that transcend time. Every diamond is ethically sourced and meticulously set by hand, ensuring that your eternal bond is celebrated with unparalleled brilliance.</p>
+                <div class="read-story"><span>READ OUR STORY</span><svg class="icon" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="container">
+            <div class="footer-grid reveal">
+                <div class="footer-col">
+                    <div class="footer-brand font-serif">ETERNAL BOND</div>
+                    <p class="footer-brand-desc">Crafting memories and celebrating eternal love with exquisite, conflict-free fine jewelry since 1920.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>EXPLORE</h4>
+                    <ul>
+                        <li><a href="#">Engagement Rings</a></li>
+                        <li><a href="#">Wedding Bands</a></li>
+                        <li><a href="#">Fine Jewelry</a></li>
+                        <li><a href="#">Bespoke Design</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>ABOUT US</h4>
+                    <ul>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Craftsmanship</a></li>
+                        <li><a href="#">Sustainability</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>CUSTOMER CARE</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Shipping & Returns</a></li>
+                        <li><a href="#">Ring Sizer</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom reveal delay-200">
+                <p>&copy; <span id="year"></span> ETERNAL BOND. All Rights Reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').textContent = new Date().getFullYear();
+            const openMenuBtn = document.getElementById('openMenuBtn');
+            const closeMenuBtn = document.getElementById('closeMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+            function toggleMenu(isOpen) {
+                if (isOpen) {
+                    mobileMenu.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    mobileMenu.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            }
+            openMenuBtn.addEventListener('click', () => toggleMenu(true));
+            closeMenuBtn.addEventListener('click', () => toggleMenu(false));
+            mobileLinks.forEach(link => link.addEventListener('click', () => toggleMenu(false)));
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('active');
+                });
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+        });
+    </script>
 </body>
 </html>
