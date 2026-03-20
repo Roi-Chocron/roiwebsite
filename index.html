@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Eternal Bond</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+function App() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="p-10 text-center">
+      <h1 className="text-4xl font-bold mb-6">ETERNAL BOND</h1>
+      <p className="mb-6">Luxury Jewelry Experience</p>
+      <button onClick={()=>setOpen(!open)} className="px-6 py-3 bg-black text-white">
+        {open ? 'Close' : 'Open'} Menu
+      </button>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>
